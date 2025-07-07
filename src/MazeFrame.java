@@ -18,7 +18,7 @@ public class MazeFrame extends MyFrame {
 
 		_mazeData = new int[_height][_width];
 
-		// 外周壁、スタート、ゴールの設置処理
+		/*// 外周壁、スタート、ゴールの設置処理
 		for (int y = 0; y < _height; y++) {
 			for (int x = 0; x < _width; x++) {
 
@@ -37,7 +37,49 @@ public class MazeFrame extends MyFrame {
 				}
 				_mazeData[y][x] = cellType;
 			}
-		}
+		}*/
+		 // 初期化：全て壁にする
+	    for (int y = 0; y < _height; y++) {
+	        for (int x = 0; x < _width; x++) {
+	            _mazeData[y][x] = 1;
+	        }
+	    }
+
+	    // 掘り始めるスタート地点（奇数座標から）
+	    dig(1, 1);
+
+	    // スタート地点
+	    _mazeData[1][1] = 2;
+
+	    // ゴール地点（右下から逆に探して道になってるとこに置く）
+	    for (int y = _height - 2; y >= 1; y--) {
+	        for (int x = _width - 2; x >= 1; x--) {
+	            if (_mazeData[y][x] == 0) {
+	                _mazeData[y][x] = 3;
+	                return;
+	            }
+	        }
+	    }
+	}
+	
+	private void dig(int x, int y) {
+	    // 移動方向（上下左右）
+	    int[][] directions = { {0, -2}, {2, 0}, {0, 2}, {-2, 0} };
+
+	    // ランダムにシャッフル
+	    java.util.Collections.shuffle(java.util.Arrays.asList(directions));
+
+	    for (int[] dir : directions) {
+	        int nx = x + dir[0];
+	        int ny = y + dir[1];
+
+	        if (nx > 0 && nx < _width - 1 && ny > 0 && ny < _height - 1 && _mazeData[ny][nx] == 1) {
+	            // 間の壁を壊す
+	            _mazeData[y + dir[1]/2][x + dir[0]/2] = 0;
+	            _mazeData[ny][nx] = 0;
+	            dig(nx, ny); // 再帰で掘り進める
+	        }
+	    }
 	}
 
 	public void run() {

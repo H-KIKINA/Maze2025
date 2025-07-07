@@ -2,7 +2,7 @@
 public class Cell {
 
 	// マスの大きさ
-	int _squareSize = 30;
+	int _squareSize = 20;
 
 	// 位置
 	int _x, _y;
@@ -28,7 +28,7 @@ public class Cell {
 
 			// 壁
 			frame.setColor(0, 0, 0);
-			frame.fillRect(_x * _squareSize + 10, _y * _squareSize + 30, _squareSize, _squareSize);
+			frame.fillRect(_x * _squareSize + 10, _y * _squareSize + 30 , _squareSize, _squareSize);
 
 			break;
 		case 2:
