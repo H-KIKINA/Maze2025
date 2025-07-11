@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 public class MazeFrame extends MyFrame {
@@ -12,6 +16,9 @@ public class MazeFrame extends MyFrame {
 
 	// Cellを格納するVector配列
 	private Vector<Cell> _cells;
+	
+	private int digCount = 0; // 掘った数
+
 
 	// 迷路の生成処理(未完成)
 	private void mazeGenerate() {
@@ -45,7 +52,7 @@ public class MazeFrame extends MyFrame {
 	        }
 	    }
 
-	    // 掘り始めるスタート地点（奇数座標から）
+	    // 掘り始めるスタート地点
 	    dig(1, 1);
 
 	    // スタート地点
@@ -61,25 +68,36 @@ public class MazeFrame extends MyFrame {
 	        }
 	    }
 	}
-	
 	private void dig(int x, int y) {
-	    // 移動方向（上下左右）
-	    int[][] directions = { {0, -2}, {2, 0}, {0, 2}, {-2, 0} };
+		 int[][] directions = { {0, -2}, {2, 0}, {0, 2}, {-2, 0} };
+		    List<int[]> dirList = new ArrayList<>(Arrays.asList(directions));
+		    Collections.shuffle(dirList);
 
-	    // ランダムにシャッフル
-	    java.util.Collections.shuffle(java.util.Arrays.asList(directions));
+		    for (int[] dir : dirList) {
+		        int nx = x + dir[0];
+		        int ny = y + dir[1];
 
-	    for (int[] dir : directions) {
-	        int nx = x + dir[0];
-	        int ny = y + dir[1];
+		        if (nx > 0 && nx < _width - 1 && ny > 0 && ny < _height - 1 && _mazeData[ny][nx] == 1) {
 
-	        if (nx > 0 && nx < _width - 1 && ny > 0 && ny < _height - 1 && _mazeData[ny][nx] == 1) {
-	            // 間の壁を壊す
-	            _mazeData[y + dir[1]/2][x + dir[0]/2] = 0;
-	            _mazeData[ny][nx] = 0;
-	            dig(nx, ny); // 再帰で掘り進める
-	        }
-	    }
+		            int adjacentPaths = 0;
+		            int[][] checkDirs = { {0, -1}, {1, 0}, {0, 1}, {-1, 0} };
+		            for (int[] cd : checkDirs) {
+		                int cx = nx + cd[0];
+		                int cy = ny + cd[1];
+		                if (cx >= 0 && cx < _width && cy >= 0 && cy < _height) {
+		                    if (_mazeData[cy][cx] == 0 || _mazeData[cy][cx] == 2 || _mazeData[cy][cx] == 3) {
+		                        adjacentPaths++;
+		                    }
+		                }
+		            }
+
+		            if (adjacentPaths == 0) {  // 完全迷路に近づけるなら0に
+		                _mazeData[y + dir[1]/2][x + dir[0]/2] = 0;
+		                _mazeData[ny][nx] = 0;
+		                dig(nx, ny);
+		            }
+		        }
+		    }
 	}
 
 	public void run() {
